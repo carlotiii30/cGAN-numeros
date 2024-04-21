@@ -1,0 +1,1 @@
+Seguido tutorial de: https://keras.io/examples/generative/conditional_gan/
