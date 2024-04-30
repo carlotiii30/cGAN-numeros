@@ -1,8 +1,8 @@
 import keras
+import imageio
 import numpy as np
 import tensorflow as tf
 from cGAN import conditionalGAN
-
 
 # - - - - - - - Constants - - - - - - -
 batch_size = 64
@@ -12,19 +12,14 @@ image_size = 28
 latent_dim = 128
 
 # - - - - - - - Load the dataset - - - - - - -
-# We'll use all the available examples from both the training and test
-# sets.
 (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
 all_digits = np.concatenate([x_train, x_test])
 all_labels = np.concatenate([y_train, y_test])
 
-# Scale the pixel values to [0, 1] range, add a channel dimension to
-# the images, and one-hot encode the labels.
 all_digits = all_digits.astype("float32") / 255.0
 all_digits = np.reshape(all_digits, (-1, 28, 28, 1))
 all_labels = keras.utils.to_categorical(all_labels, 10)
 
-# Create tf.data.Dataset.
 dataset = tf.data.Dataset.from_tensor_slices((all_digits, all_labels))
 dataset = dataset.shuffle(buffer_size=1024).batch(batch_size)
 
@@ -39,19 +34,17 @@ dis_channels = num_channels + num_classes
 generator = keras.Sequential(
     [
         keras.layers.InputLayer((gen_channels,)),
-        # We want to generate 128 + num_classes coefficients to reshape
-        # into a 7x7x(128 + num_classes) map
         keras.layers.Dense(7 * 7 * gen_channels),
         keras.layers.LeakyReLU(negative_slope=0.2),
-        # Layer
+
         keras.layers.Reshape((7, 7, gen_channels)),
         keras.layers.Conv2DTranspose(128, kernel_size=4, strides=2, padding="same"),
-        # Layer
+
         keras.layers.LeakyReLU(negative_slope=0.2),
         keras.layers.Conv2DTranspose(
             batch_size, kernel_size=4, strides=2, padding="same"
         ),
-        # Output layer
+
         keras.layers.LeakyReLU(negative_slope=0.2),
         keras.layers.Conv2DTranspose(
             1, kernel_size=7, strides=1, padding="same", activation="sigmoid"
@@ -88,4 +81,48 @@ cond_gan.compile(
     loss_fn=keras.losses.BinaryCrossentropy(from_logits=True),
 )
 
-cond_gan.fit(dataset, epochs=20)
+cond_gan.fit(dataset, epochs=30)
+
+# - - - - - - - Interpolation - - - - - - -
+
+trained_gen = cond_gan.generator
+
+num_interpolation = 9
+
+interpolation_noise = keras.random.normal(shape=(1, latent_dim))
+interpolation_noise = keras.ops.repeat(interpolation_noise, repeats=num_interpolation)
+interpolation_noise = keras.ops.reshape(
+    interpolation_noise, (num_interpolation, latent_dim)
+)
+
+
+def interpolate_class(first_number, second_number):
+    first_label = keras.utils.to_categorical([first_number], num_classes)
+    second_label = keras.utils.to_categorical([second_number], num_classes)
+    first_label = keras.ops.cast(first_label, "float32")
+    second_label = keras.ops.cast(second_label, "float32")
+
+    percent_second_label = keras.ops.linspace(0, 1, num_interpolation)[:, None]
+    percent_second_label = keras.ops.cast(percent_second_label, "float32")
+    interpolation_labels = (
+        first_label * (1 - percent_second_label) + second_label * percent_second_label
+    )
+
+    noise_and_labels = keras.ops.concatenate(
+        [interpolation_noise, interpolation_labels], 1
+    )
+    fake_images = trained_gen.predict(noise_and_labels)
+    return fake_images
+
+
+start_class = 2
+end_class = 6
+fake_images = interpolate_class(start_class, end_class)
+
+fake_images_rgb = np.tile(fake_images, (1, 1, 1, 3))
+
+for i, image in enumerate(fake_images_rgb):
+    image *= 255.0
+    converted_image = image.astype(np.uint8)
+    filename = f"interpolated_image_{i}.png"
+    imageio.imwrite(filename, converted_image)
