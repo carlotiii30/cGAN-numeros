@@ -1,6 +1,6 @@
 import socket
 import threading
-import handler
+from handler import Handler
 
 
 class Server:
@@ -43,5 +43,5 @@ class Server:
         Args:
             client_socket (socket): Client socket.
         """
-        handler = handler(client_socket)
+        handler = Handler(client_socket)
         handler.handle()

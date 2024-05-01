@@ -119,7 +119,7 @@ def train_model(dataset, cond_gan):
         dataset (tf.data.Dataset): Dataset containing the training images and labels.
         cond_gan (conditionalGAN): Compiled cGAN model.
     """
-    cond_gan.fit(dataset, epochs=1)
+    cond_gan.fit(dataset, epochs=30)
 
 
 def save_model_weights(cond_gan, filename):

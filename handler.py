@@ -1,6 +1,7 @@
 import json
 import logging
 import drawing
+import utils
 
 
 class Handler:
@@ -32,7 +33,8 @@ class Handler:
 
                 if command == "generate":
                     try:
-                        drawing.draw_number(text)
+                        cond_gan = utils.load_model_with_weights("cond_gan_weights.weights.h5")
+                        drawing.draw_number(text, cond_gan)
 
                         '''response = {
                             "status": "success",
