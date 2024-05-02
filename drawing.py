@@ -2,7 +2,7 @@ import keras
 import imageio
 import numpy as np
 
-from utils import num_classes, latent_dim
+from utils import num_classes, latent_dim, load_model_with_weights
 
 def draw_number(number, cond_gan):
     number = int(number)
@@ -23,3 +23,9 @@ def draw_number(number, cond_gan):
 
     filename = f"./images/drawn_number_{number}.png"
     imageio.imwrite(filename, generated_image)
+
+
+cond_gan = load_model_with_weights("cond_gan_weights.weights.h5")
+
+for i in range(10):
+    draw_number(i, cond_gan)
