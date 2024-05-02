@@ -34,13 +34,14 @@ class Handler:
                 if command == "generate":
                     try:
                         cond_gan = utils.load_model_with_weights("cond_gan_weights.weights.h5")
-                        drawing.draw_number(text, cond_gan)
+                        img = drawing.draw_number(text, cond_gan)
+                        img = img.tolist()
 
-                        '''response = {
+                        response = {
                             "status": "success",
                             "message": "Image generated successfully",
-                            "image": image_json,
-                        }'''
+                            "image": img,
+                        }
 
                         logging.info("Image generated successfully")
 

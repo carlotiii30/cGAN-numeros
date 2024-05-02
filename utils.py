@@ -30,9 +30,6 @@ def load_dataset():
     dataset = tf.data.Dataset.from_tensor_slices((all_digits, all_labels))
     dataset = dataset.shuffle(buffer_size=1024).batch(batch_size)
 
-    print(f"Shape of training images: {all_digits.shape}")
-    print(f"Shape of training labels: {all_labels.shape}")
-
     return dataset
 
 
@@ -83,6 +80,7 @@ def build_models():
     )
 
     return generator, discriminator
+
 
 def build_conditional_gan(generator, discriminator):
     """
