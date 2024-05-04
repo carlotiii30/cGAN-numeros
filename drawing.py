@@ -23,3 +23,5 @@ def draw_number(number, cond_gan):
 
     filename = f"./images/drawn_number_{number}.png"
     imageio.imwrite(filename, generated_image)
+
+    return generated_image
