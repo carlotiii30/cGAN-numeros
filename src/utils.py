@@ -3,7 +3,7 @@ import keras
 import numpy as np
 import tensorflow as tf
 
-from cGAN import conditionalGAN
+from src.cGAN import conditionalGAN
 
 batch_size = 64
 num_channels = 1
