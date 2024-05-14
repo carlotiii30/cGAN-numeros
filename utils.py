@@ -5,11 +5,11 @@ import tensorflow as tf
 
 from cGAN import conditionalGAN
 
-batch_size = 64
-num_channels = 1
-num_classes = 10
-image_size = 28
-latent_dim = 128
+BATCH_SIZE = 64
+NUM_CHANNELS = 1
+NUM_CLASSES = 10
+IMAGE_SIZE = 28
+LATENT_DIM = 128
 
 
 def load_dataset():
@@ -28,7 +28,7 @@ def load_dataset():
     all_labels = keras.utils.to_categorical(all_labels, 10)
 
     dataset = tf.data.Dataset.from_tensor_slices((all_digits, all_labels))
-    dataset = dataset.shuffle(buffer_size=1024).batch(batch_size)
+    dataset = dataset.shuffle(buffer_size=1024).batch(BATCH_SIZE)
 
     return dataset
 
@@ -42,8 +42,8 @@ def build_models():
         keras.Model: Discriminator model.
     """
     # - - - - - - - Calculate the number of input channels - - - - - - -
-    gen_channels = latent_dim + num_classes
-    dis_channels = num_channels + num_classes
+    gen_channels = LATENT_DIM + NUM_CLASSES
+    dis_channels = NUM_CHANNELS + NUM_CLASSES
 
     # - - - - - - - Generator - - - - - - -
     generator = keras.Sequential(
@@ -55,7 +55,7 @@ def build_models():
             keras.layers.Conv2DTranspose(128, kernel_size=4, strides=2, padding="same"),
             keras.layers.LeakyReLU(negative_slope=0.2),
             keras.layers.Conv2DTranspose(
-                batch_size, kernel_size=4, strides=2, padding="same"
+                BATCH_SIZE, kernel_size=4, strides=2, padding="same"
             ),
             keras.layers.LeakyReLU(negative_slope=0.2),
             keras.layers.Conv2DTranspose(
@@ -69,7 +69,7 @@ def build_models():
     discriminator = keras.Sequential(
         [
             keras.layers.InputLayer((28, 28, dis_channels)),
-            keras.layers.Conv2D(batch_size, kernel_size=3, strides=2, padding="same"),
+            keras.layers.Conv2D(BATCH_SIZE, kernel_size=3, strides=2, padding="same"),
             keras.layers.LeakyReLU(negative_slope=0.2),
             keras.layers.Conv2D(128, kernel_size=3, strides=2, padding="same"),
             keras.layers.LeakyReLU(negative_slope=0.2),
@@ -96,9 +96,9 @@ def build_conditional_gan(generator, discriminator):
     cond_gan = conditionalGAN(
         discriminator=discriminator,
         generator=generator,
-        latent_dim=latent_dim,
-        image_size=image_size,
-        num_classes=num_classes,
+        LATENT_DIM=LATENT_DIM,
+        IMAGE_SIZE=IMAGE_SIZE,
+        NUM_CLASSES=NUM_CLASSES,
     )
     cond_gan.compile(
         d_optimizer=keras.optimizers.Adam(learning_rate=0.0003),
