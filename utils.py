@@ -96,9 +96,9 @@ def build_conditional_gan(generator, discriminator):
     cond_gan = conditionalGAN(
         discriminator=discriminator,
         generator=generator,
-        LATENT_DIM=LATENT_DIM,
-        IMAGE_SIZE=IMAGE_SIZE,
-        NUM_CLASSES=NUM_CLASSES,
+        latent_dim=LATENT_DIM,
+        image_size=IMAGE_SIZE,
+        num_classes=NUM_CLASSES,
     )
     cond_gan.compile(
         d_optimizer=keras.optimizers.Adam(learning_rate=0.0003),
