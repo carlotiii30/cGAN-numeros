@@ -21,6 +21,7 @@ class Handler:
             socket: Client socket.
         """
         self.socket = socket
+        self.cond_gan = utils.load_model_with_weights("cond_gan_weights.weights.h5")
 
     def handle(self):
         """Method that handles the client's request."""
@@ -31,10 +32,30 @@ class Handler:
                 command = request.get("command")
                 text = request.get("text", "")
 
-                if command == "generate":
+                if command == "generate_number":
                     try:
-                        cond_gan = utils.load_model_with_weights("cond_gan_weights.weights.h5")
-                        img = drawing.draw_number(text, cond_gan)
+                        img = drawing.draw_number(text, self.cond_gan)
+                        img = img.tolist()
+
+                        response = {
+                            "status": "success",
+                            "message": "Image generated successfully",
+                            "image": img,
+                        }
+
+                        logging.info("Image generated successfully")
+
+                    except Exception as e:
+                        response = {
+                            "status": "error",
+                            "message": f"Error generating the image: {str(e)}",
+                        }
+
+                        logging.error(f"Error generating the image: {str(e)}")
+
+                if command == "generate_image":
+                    try:
+                        img = drawing.draw_image(text, self.cond_gan)
                         img = img.tolist()
 
                         response = {

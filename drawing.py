@@ -2,7 +2,7 @@ import keras
 import imageio
 import numpy as np
 
-from utils import num_classes, latent_dim, load_model_with_weights
+from utils import num_classes, latent_dim
 
 def draw_number(number, cond_gan):
     number = int(number)
@@ -25,3 +25,4 @@ def draw_number(number, cond_gan):
     imageio.imwrite(filename, generated_image)
 
     return generated_image
+
