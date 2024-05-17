@@ -2,7 +2,7 @@ import keras
 import imageio
 import numpy as np
 
-from utils import num_classes, latent_dim
+from src.utils import num_classes, latent_dim
 
 def draw_number(number, cond_gan):
     number = int(number)

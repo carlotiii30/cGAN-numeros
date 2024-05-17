@@ -1,4 +1,4 @@
-from utils import (
+from src.utils import (
     load_dataset,
     build_models,
     build_conditional_gan,

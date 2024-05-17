@@ -1,7 +1,7 @@
 import json
 import logging
-import drawing
-import utils
+import src.drawing as drawing
+import src.utils as utils
 
 
 class Handler:
@@ -53,7 +53,7 @@ class Handler:
 
                         logging.error(f"Error generating the image: {str(e)}")
 
-                if command == "generate_image":
+                elif command == "generate_image":
                     try:
                         img = drawing.draw_image(text, self.cond_gan)
                         img = img.tolist()
