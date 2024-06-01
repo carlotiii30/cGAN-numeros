@@ -11,7 +11,10 @@ run: ## Run the server
 	python -m src.main
 
 train: ## Train the model
-	python training.py
+	python -m src.training
+
+draw: ## Draw the model
+	python -m src.drawing
 
 test: ## Run tests
 	pytest -v

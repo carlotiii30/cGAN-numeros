@@ -2,12 +2,12 @@ import keras
 import imageio
 import numpy as np
 
-from src.utils import num_classes, latent_dim
+from src import utils
 
 def draw_number(number, cond_gan):
     number = int(number)
-    noise = np.random.normal(size=(1, latent_dim))
-    label = keras.utils.to_categorical([number], num_classes)
+    noise = np.random.normal(size=(1, utils.latent_dim))
+    label = keras.utils.to_categorical([number], utils.num_classes)
     label = label.astype("float32")
 
     noise_and_label = np.concatenate([noise, label], 1)
@@ -25,4 +25,3 @@ def draw_number(number, cond_gan):
     imageio.imwrite(filename, generated_image)
 
     return generated_image
-
